@@ -36,11 +36,12 @@ class Game {
 
   Game() {
     oscP5 = new OscP5(this, 9000);
-    myRemoteLocation = new NetAddress("192.168.0.100", 10000);
+    //initial OSC message to restart 
+    myRemoteLocation = new NetAddress("192.168.0.100", 20000);
     OscMessage myMessage = new OscMessage("/1/fader1");
     myMessage.add(0.6); 
     oscP5.send(myMessage, myRemoteLocation);
-    myRemoteLocation = new NetAddress("192.168.0.100", 20000);
+    
 
     mCurrentState = GameState.INIT;
     lastMillis = 0;
@@ -76,6 +77,8 @@ class Game {
       popMatrix();
       popMatrix();
       popStyle();
+      
+      
     }
 
 

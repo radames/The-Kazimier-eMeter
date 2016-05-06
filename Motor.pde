@@ -24,7 +24,7 @@ class Motor {
 
     //only send OSC if the angle changes by a small amount
     //avoid constant OSC messages
-    if (abs(lastAngle - angle) > 0.002) {
+    if (abs(lastAngle - angle) > 0.003) {
 
       OscMessage myMessage = new OscMessage("/1/fader2");
       myMessage.add(angle); /* add an int to the osc message */

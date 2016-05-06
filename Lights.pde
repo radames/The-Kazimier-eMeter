@@ -10,7 +10,7 @@ class Lights {
   private int lastSeg, currSeg;
 
   //keep state of the segments
-  private int segments[] = new int[8];
+  public int segments[] = new int[8];
   Lights(OscP5 _osc) {
     osc = _osc;
 

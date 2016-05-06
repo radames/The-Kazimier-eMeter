@@ -76,7 +76,24 @@ class Game {
       popMatrix();
       popMatrix();
       popStyle();
-      ;
+    }
+
+    for (int i=0; i< mLight.segments.length; i++) {
+      if (mLight.segments[i] == 1) {
+        pushMatrix();
+        pushStyle();
+          translate(width/2, height/2);
+          translate(300*cos(PI+i*PI/4), 300*sin(PI+i*PI/4));
+          rectMode(CENTER);
+          pushMatrix();
+          rotate(PI/8+(i*PI/4));
+          noStroke();
+          fill(255,0,0);
+          rect(-25, -300*sqrt(2-2*cos(PI/4))/2, 50, 300*sqrt(2-2*cos(PI/4)));
+          popMatrix();
+        popStyle();
+        popMatrix();
+      }
     }
 
 
@@ -130,7 +147,7 @@ class Game {
       }
     }
   }
-  void close(){
+  void close() {
     mMotor.setAngle(ZEROANG);
     mLight.setAngle(ZEROANG);
   }

@@ -10,6 +10,8 @@ class Game {
 
   OscP5 oscP5;
   NetAddress myRemoteLocation;
+  NetAddress lightServer;
+
   private static final long BLOCKTIME = 5000;  
   /*
   WAITING mode - 
@@ -30,27 +32,36 @@ class Game {
 
   private GameState mCurrentState;
   private long lastMillis;
-  private long OSClastMillis;
-
-  private float angle;
+  private float angle, lastAngle, lightAngle;
 
   Game() {
     oscP5 = new OscP5(this, 9000);
     //initial OSC message to restart 
     myRemoteLocation = new NetAddress("192.168.0.100", 20000);
+
     OscMessage myMessage = new OscMessage("/1/fader1");
     myMessage.add(0.6); 
     oscP5.send(myMessage, myRemoteLocation);
-    
+
+    lightServer = new NetAddress("192.168.0.8", 3000);
+
+    for (int i=0; i<8; i++) {
+      myMessage = new OscMessage("/lightSegOff/"+i);
+      oscP5.send(myMessage, lightServer);
+    }
 
     mCurrentState = GameState.INIT;
     lastMillis = 0;
-    OSClastMillis = 0;
-    sendAngle(0); // start Arrow at 0
+    lastAngle = 1;
+    angle = 0; //start angle 0
+    setMotorAngle();
   }
 
 
   void draw() {
+
+
+
     pushMatrix();
     pushStyle();
     translate(width/2, height/2);
@@ -77,8 +88,8 @@ class Game {
       popMatrix();
       popMatrix();
       popStyle();
-      
-      
+      setMotorAngle();
+      setLightRing();
     }
 
 
@@ -109,6 +120,7 @@ class Game {
   }
 
   void update(float _angle) {
+    lastAngle = angle; //keep track of the last angle
     angle = _angle;
     if (angle !=- 1 && mCurrentState == GameState.WAIT ) {
       mCurrentState = GameState.START;
@@ -123,18 +135,36 @@ class Game {
     } else if (mCurrentState == GameState.WAIT) {
     } else if (mCurrentState == GameState.START) {
       if (angle !=- 1) {
-        sendAngle(angle);
+        setMotorAngle();
       }
     }
   }
 
-  void sendAngle(float a) {
+  void setMotorAngle() {
+    //only send OSC if the angle
+    if (abs(lastAngle - angle) > 0.002) {
 
-    OscMessage myMessage = new OscMessage("/1/fader2");
-    myMessage.add(a); /* add an int to the osc message */
-    if (millis() - OSClastMillis > 10) {
+      OscMessage myMessage = new OscMessage("/1/fader2");
+      myMessage.add(angle); /* add an int to the osc message */
       oscP5.send(myMessage, myRemoteLocation);
-      OSClastMillis = millis();
+    }
+  }
+
+  void setLightRing() {
+    //only send OSC if the angle
+    if (abs(lastAngle - angle) > 0.002) {
+
+      OscMessage myMessage = new OscMessage("/light/1");
+      myMessage.add(angle); /* add an int to the osc message */
+      oscP5.send(myMessage, lightServer);
+
+
+
+
+      int seg = int(map(angle, 0, 1, 0, 8));
+      //myMessage = new OscMessage("/lightSeg/"+seg);
+      myMessage = new OscMessage("/lightSegOff/"+seg);
+      oscP5.send(myMessage, lightServer);
     }
   }
 }

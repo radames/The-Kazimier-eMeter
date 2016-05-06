@@ -1,4 +1,4 @@
-private static final float ZEROANG = 0.55;
+private static final float ZEROANG = 0.0;
 
 private enum GameState {
   INIT, 

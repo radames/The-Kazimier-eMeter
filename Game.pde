@@ -1,3 +1,4 @@
+private static final float ZEROANG = 0.55;
 
 private enum GameState {
   INIT, 
@@ -100,7 +101,7 @@ class Game {
       textSize(50);
       textAlign(CENTER, CENTER);
       textFont(font);
-      text("START\n"+str(millis() - lastMillis), width/2, height/2);
+      text(angle+"\nSTART\n"+str(millis() - lastMillis), width/2, height/2);
       popStyle();
     }
   }
@@ -128,5 +129,9 @@ class Game {
         mMotor.setAngle(_angle);
       }
     }
+  }
+  void close(){
+    mMotor.setAngle(ZEROANG);
+    mLight.setAngle(ZEROANG);
   }
 }

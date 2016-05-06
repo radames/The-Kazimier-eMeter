@@ -31,3 +31,6 @@ void draw() {
   g.draw();
   game.draw();
 }
+void exit(){
+  game.close();
+}

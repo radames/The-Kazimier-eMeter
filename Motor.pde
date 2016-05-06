@@ -15,7 +15,7 @@ class Motor {
     osc.send(myMessage, mRemoteLoc);
     lastAngle = 0;
     angle = 1;
-    setAngle(0);
+    setAngle(ZEROANG);
   }
 
 

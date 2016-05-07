@@ -4,6 +4,7 @@ private enum GameState {
     WAIT, 
     START, 
     SHUFFLE, 
+    TEST, 
     STOP, 
     RESET,
 };
@@ -13,6 +14,7 @@ class Game {
   OscP5 oscP5;
   Motor mMotor;
   Lights mLight;
+
 
   private static final long BLOCKTIME = 6000;  
   /*
@@ -34,8 +36,8 @@ class Game {
 
   private GameState mCurrentState;
   private long lastMillis;
-  private float angle;
-
+  private float angle, shuffleAngle;
+  private int countShuffle;
   Game() {
     oscP5 = new OscP5(this, 9000);
 
@@ -44,6 +46,7 @@ class Game {
 
     mCurrentState = GameState.INIT;
     lastMillis = 0;
+    countShuffle = 0;
   }
 
 
@@ -119,6 +122,20 @@ class Game {
       textFont(font);
       text(angle+"\nSTART\n"+str(millis() - lastMillis), width/2, height/2);
       popStyle();
+    } else if (mCurrentState == GameState.SHUFFLE) {
+      pushStyle();
+      textSize(50);
+      textAlign(CENTER, CENTER);
+      textFont(font);
+      text(angle+"\nSHUFFLE\n"+str(millis() - lastMillis), width/2, height/2);
+      popStyle();
+    } else if (mCurrentState == GameState.TEST) {
+      pushStyle();
+      textSize(50);
+      textAlign(CENTER, CENTER);
+      textFont(font);
+      text(angle+"\n"+shuffleAngle+"\nTEST\n"+str(millis() - lastMillis), width/2, height/2);
+      popStyle();
     } else if (mCurrentState == GameState.RESET) {
       pushStyle();
       textSize(50);
@@ -130,8 +147,9 @@ class Game {
   }
 
   void update(float _angle) {
-    angle = _angle;
-
+    if (_angle!= -1) {
+      angle = _angle;
+    }
     if (mCurrentState == GameState.INIT) { //wait block time, init
       if (millis() - lastMillis > BLOCKTIME) {
         mCurrentState = GameState.WAIT;
@@ -147,10 +165,31 @@ class Game {
         mMotor.setAngle(_angle);
         mLight.setAngle(_angle);
       }
-    } else if (mCurrentState == GameState.RESET) {
-      if (millis() - lastMillis > BLOCKTIME) {
-        mCurrentState = GameState.START;
+
+      //wait for the intruction and experiment time
+      if (millis() - lastMillis > 5000) {
+        mCurrentState = GameState.SHUFFLE;
         lastMillis = millis();
+      }
+    } else if (mCurrentState == GameState.SHUFFLE) {
+
+      if (millis() - lastMillis > 200) {
+        shuffleAngle = random(0, 1);
+        mLight.setAngle(shuffleAngle);
+        lastMillis = millis();
+        countShuffle++;
+        if (countShuffle > 30 && abs(shuffleAngle-angle) > 0.006) {
+          mCurrentState = GameState.TEST;
+        }
+      }
+    } else if (mCurrentState == GameState.TEST) {
+      if (_angle !=- 1) {
+        mMotor.setAngle(_angle);
+        if(abs(shuffleAngle-_angle) < 0.006){
+          mCurrentState = GameState.SHUFFLE;
+          lastMillis = millis();
+          countShuffle = 0;
+        }
       }
     }
   }

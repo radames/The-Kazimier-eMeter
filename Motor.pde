@@ -9,12 +9,9 @@ class Motor {
     osc = _osc;
 
     //initial OSC message to restart 
-    mRemoteLoc = new NetAddress("192.168.0.100", 20000);
-    startMotor();
+    mRemoteLoc = new NetAddress("192.168.0.100", 10000);
+    //startMotor();
     resetMotor();
-    lastAngle = 0;
-    angle = 1;
-    setAngle(ZEROANG);
   }
 
 
@@ -25,8 +22,11 @@ class Motor {
     //only send OSC if the angle changes by a small amount
     //avoid constant OSC messages
     if (abs(lastAngle - angle) > 0.003) {
+      OscMessage myMessage = new OscMessage("/twiz");
 
-      OscMessage myMessage = new OscMessage("/1/fader2");
+      //OscMessage myMessage = new OscMessage("/1/fader2");
+      myMessage.add(0.0); /* add an int to the osc message */
+      myMessage.add(0.0); /* add an int to the osc message */
       myMessage.add(angle); /* add an int to the osc message */
       osc.send(myMessage, mRemoteLoc);
     }
@@ -39,5 +39,8 @@ class Motor {
   void resetMotor() {
     OscMessage myMessage = new OscMessage("/calibrate");
     osc.send(myMessage, mRemoteLoc);
+
+    lastAngle = 0;
+    angle = 0;
   }
 }

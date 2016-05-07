@@ -1,10 +1,10 @@
-private static final float ZEROANG = 0.0;
 
 private enum GameState {
   INIT, 
     WAIT, 
     START, 
-    STOP
+    STOP,
+    RESET,
 };
 
 class Game {
@@ -48,8 +48,6 @@ class Game {
 
   void draw() {
 
-
-
     pushMatrix();
     pushStyle();
     translate(width/2, height/2);
@@ -82,15 +80,15 @@ class Game {
       if (mLight.segments[i] == 1) {
         pushMatrix();
         pushStyle();
-          translate(width/2, height/2);
-          translate(300*cos(PI+i*PI/4), 300*sin(PI+i*PI/4));
-          rectMode(CENTER);
-          pushMatrix();
-          rotate(PI/8+(i*PI/4));
-          noStroke();
-          fill(255,0,0);
-          rect(-25, -300*sqrt(2-2*cos(PI/4))/2, 50, 300*sqrt(2-2*cos(PI/4)));
-          popMatrix();
+        translate(width/2, height/2);
+        translate(300*cos(PI+i*PI/4), 300*sin(PI+i*PI/4));
+        rectMode(CENTER);
+        pushMatrix();
+        rotate(PI/8+(i*PI/4));
+        noStroke();
+        fill(255, 0, 0);
+        rect(-25, -300*sqrt(2-2*cos(PI/4))/2, 50, 300*sqrt(2-2*cos(PI/4)));
+        popMatrix();
         popStyle();
         popMatrix();
       }
@@ -120,15 +118,18 @@ class Game {
       textFont(font);
       text(angle+"\nSTART\n"+str(millis() - lastMillis), width/2, height/2);
       popStyle();
+    }else if (mCurrentState == GameState.RESET) {
+      pushStyle();
+      textSize(50);
+      textAlign(CENTER, CENTER);
+      textFont(font);
+      text("RESETING\n"+str(millis() - lastMillis), width/2, height/2);
+      popStyle();
     }
   }
 
   void update(float _angle) {
     angle = _angle;
-    if (_angle!=-1) {
-      mMotor.setAngle(_angle);
-      mLight.setAngle(_angle);
-    }
 
     if (_angle !=- 1 && mCurrentState == GameState.WAIT ) {
       mCurrentState = GameState.START;
@@ -144,11 +145,20 @@ class Game {
     } else if (mCurrentState == GameState.START) {
       if (_angle !=- 1) {
         mMotor.setAngle(_angle);
+        mLight.setAngle(_angle);
+      }
+    }else if (mCurrentState == GameState.RESET) {
+      if (millis() - lastMillis > BLOCKTIME) {
+        mCurrentState = GameState.START;
+        lastMillis = 0;
       }
     }
   }
-  void close() {
-    mMotor.setAngle(ZEROANG);
-    mLight.setAngle(ZEROANG);
+
+  void generalReset() {
+    mCurrentState = GameState.RESET;
+    mMotor.resetMotor();
+    mLight.resetLight();
+    lastMillis = millis();
   }
 }

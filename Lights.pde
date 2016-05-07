@@ -4,8 +4,6 @@ class Lights {
   NetAddress mRemoteLoc;
   OscP5 osc;
 
-
-
   private float angle, lastAngle;
   private int lastSeg, currSeg;
 
@@ -15,18 +13,7 @@ class Lights {
     osc = _osc;
 
     mRemoteLoc = new NetAddress("192.168.0.8", 3000);
-
-    OscMessage myMessage;
-    for (int i=0; i<8; i++) {
-      myMessage = new OscMessage("/lightSegOff/"+i);
-      osc.send(myMessage, mRemoteLoc);
-    }
-
-    lastAngle = 0;
-    angle = 1;
-    setAngle(ZEROANG);
-
-    for (int i=0; i <segments.length; i++) segments[i] = 0;
+    resetLight();
   }
 
   void setAngle(float _angle) {
@@ -34,7 +21,7 @@ class Lights {
     angle = _angle;
     //only send OSC if the angle changes by a small amount
     //avoid constant OSC messages
-    if (abs(lastAngle - angle) > 0.002) {
+    if (abs(lastAngle - angle) > 0.003) {
 
       OscMessage myMessage = new OscMessage("/light/1");
       myMessage.add(angle); /* add an int to the osc message */
@@ -42,9 +29,10 @@ class Lights {
 
       lastSeg = currSeg;
       currSeg = int(map(angle, 0, 1, 0, 8));
-      
+
       //only sends message if the arrow is in a new segment
       if (abs(lastSeg - currSeg) > 0) {
+        println(lastSeg, currSeg);
         //if the current segment is off
         if (segments[currSeg] == 0) {
           //send OSC on message
@@ -53,12 +41,31 @@ class Lights {
           //turn off last segment
           myMessage = new OscMessage("/lightSegOff/" + lastSeg);
           osc.send(myMessage, mRemoteLoc);
-          
+
           segments[lastSeg] = 0;
           segments[currSeg] = 1;
-          
         }
       }
     }
+  }
+  void resetLight() {
+    OscMessage myMessage = new OscMessage("/light/1");
+    myMessage.add(0); /* add an int to the osc message */
+    osc.send(myMessage, mRemoteLoc);
+    //first segment ON
+    segments[0] = 1;
+    myMessage = new OscMessage("/lightSeg/0");
+    osc.send(myMessage, mRemoteLoc);
+
+    for (int i = 1; i < segments.length; i++) {
+      segments[i] = 0;
+      myMessage = new OscMessage("/lightSegOff/"+i);
+      osc.send(myMessage, mRemoteLoc);
+    }
+
+    lastAngle = 0;
+    angle = 0;
+    currSeg = 0;
+    lastSeg = 1;
   }
 }

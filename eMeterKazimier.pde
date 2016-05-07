@@ -56,7 +56,7 @@ void serialEvent(Serial sPort) {
     if (pins[1] == 0) {// Pressed
       Date d = new Date();
       println("Reseting Motor Positon " +  d.getTime()/1000);
-      game.generalReset();
+      game.reset();
     }
   } else if (pins[0] == 1) {//button 2
     if (pins[1] == 0) {// Pressed

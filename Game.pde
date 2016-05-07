@@ -155,7 +155,7 @@ class Game {
     }
   }
 
-  void generalReset() {
+  void reset() {
     mCurrentState = GameState.RESET;
     mMotor.resetMotor();
     mLight.resetLight();

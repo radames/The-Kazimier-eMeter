@@ -3,7 +3,8 @@ private enum GameState {
   INIT, 
     WAIT, 
     START, 
-    STOP,
+    SHUFFLE, 
+    STOP, 
     RESET,
 };
 
@@ -13,7 +14,7 @@ class Game {
   Motor mMotor;
   Lights mLight;
 
-  private static final long BLOCKTIME = 5000;  
+  private static final long BLOCKTIME = 6000;  
   /*
   WAITING mode - 
    send OSC message Wait music 
@@ -118,7 +119,7 @@ class Game {
       textFont(font);
       text(angle+"\nSTART\n"+str(millis() - lastMillis), width/2, height/2);
       popStyle();
-    }else if (mCurrentState == GameState.RESET) {
+    } else if (mCurrentState == GameState.RESET) {
       pushStyle();
       textSize(50);
       textAlign(CENTER, CENTER);
@@ -131,26 +132,25 @@ class Game {
   void update(float _angle) {
     angle = _angle;
 
-    if (_angle !=- 1 && mCurrentState == GameState.WAIT ) {
-      mCurrentState = GameState.START;
-      lastMillis = millis();
-    }
-
     if (mCurrentState == GameState.INIT) { //wait block time, init
       if (millis() - lastMillis > BLOCKTIME) {
         mCurrentState = GameState.WAIT;
         lastMillis = 0;
       }
     } else if (mCurrentState == GameState.WAIT) {
+      if (_angle !=- 1) {
+        mCurrentState = GameState.START;
+        lastMillis = millis();
+      }
     } else if (mCurrentState == GameState.START) {
       if (_angle !=- 1) {
         mMotor.setAngle(_angle);
         mLight.setAngle(_angle);
       }
-    }else if (mCurrentState == GameState.RESET) {
+    } else if (mCurrentState == GameState.RESET) {
       if (millis() - lastMillis > BLOCKTIME) {
         mCurrentState = GameState.START;
-        lastMillis = 0;
+        lastMillis = millis();
       }
     }
   }

@@ -6,6 +6,7 @@ private static final long SHUFFLE_TIME = 200; //200ms times SHUFFLE_COUNT
 private static final int SHUFFLE_COUNT = 10; // number of different shuffles
 private static final long MAX_ACTION_TIME = 15000; //15s max time to play
 private static final int MAX_ATTEMPS = 5; //max attemps
+private static final long GAMEOVERTIME = 2000;
 
 private enum GameState {
   INIT, 
@@ -234,7 +235,7 @@ class Game {
       //start shuffling, 
       //also needs to be different from the last angle position
       if (millis() - lastMillis > SHUFFLE_TIME) {
-        shuffleAngle =  map(floor(random(1,9)), 1, 9, 0, 1) + 0.0625;
+        shuffleAngle =  map(floor(random(1, 9)), 1, 9, 0, 1) + 0.0625;
 
         mLight.setAngle(shuffleAngle, 1); //send only segments lights
         lastMillis = millis();
@@ -254,15 +255,10 @@ class Game {
         if (millis() - lastMillis < MAX_ACTION_TIME) {//
           //here is good timing
           if (abs(shuffleAngle-_angle) < 0.006) { // WIN!!
-
             mCurrentState = GameState.SUCCESS;
             lastMillis = millis();
             countShuffle = 0;
             maxAttempts++;
-            if (maxAttempts >= MAX_ATTEMPS) {
-              maxAttempts = 0; 
-              mCurrentState = GameState.GAMEOVER;
-            }
           }
         } else {
           //times is over
@@ -270,10 +266,12 @@ class Game {
           lastMillis = millis();
           countShuffle = 0;
           maxAttempts++;
-          if (maxAttempts >= MAX_ATTEMPS) {
-            maxAttempts = 0; 
-            mCurrentState = GameState.GAMEOVER;
-          }
+        }
+
+        if (maxAttempts >= MAX_ATTEMPS) {
+          maxAttempts = 0; 
+          mCurrentState = GameState.GAMEOVER;
+          lastMillis = millis();
         }
       }
     } else if (mCurrentState == GameState.SUCCESS) {
@@ -300,7 +298,13 @@ class Game {
         lastMillis = millis();
       }
     } else if (mCurrentState == GameState.GAMEOVER) {
-      //general pause, it needs to pass the next state to
+      //GAME_OVER
+      if (millis() - lastMillis > GAMEOVERTIME) {
+        mCurrentState = GameState.INIT;
+        lastMillis = millis();
+        countShuffle = 0;
+        maxAttempts = 0;
+      }
     }
   }
 

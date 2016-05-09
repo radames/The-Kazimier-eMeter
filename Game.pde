@@ -234,8 +234,8 @@ class Game {
       //start shuffling, 
       //also needs to be different from the last angle position
       if (millis() - lastMillis > SHUFFLE_TIME) {
-        shuffleAngle = (float)1.0/floor(random(0,8));
-        println(shuffleAngle);
+        shuffleAngle =  map(floor(random(1,9)), 1, 9, 0, 1) + 0.0625;
+
         mLight.setAngle(shuffleAngle, 1); //send only segments lights
         lastMillis = millis();
         countShuffle++;
@@ -259,7 +259,7 @@ class Game {
             lastMillis = millis();
             countShuffle = 0;
             maxAttempts++;
-            if (maxAttempts > MAX_ATTEMPS) {
+            if (maxAttempts >= MAX_ATTEMPS) {
               maxAttempts = 0; 
               mCurrentState = GameState.GAMEOVER;
             }
@@ -270,7 +270,7 @@ class Game {
           lastMillis = millis();
           countShuffle = 0;
           maxAttempts++;
-          if (maxAttempts > MAX_ATTEMPS) {
+          if (maxAttempts >= MAX_ATTEMPS) {
             maxAttempts = 0; 
             mCurrentState = GameState.GAMEOVER;
           }

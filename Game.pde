@@ -1,3 +1,7 @@
+//global constats for times
+private static final RESET_TIME = 10000; //Reset time 10s
+private static final long BLOCKTIME = 6000; 
+
 
 private enum GameState {
   INIT, 
@@ -15,8 +19,6 @@ class Game {
   Motor mMotor;
   Lights mLight;
 
-
-  private static final long BLOCKTIME = 6000;  
   /*
   WAITING mode - 
    send OSC message Wait music 
@@ -191,13 +193,21 @@ class Game {
           countShuffle = 0;
         }
       }
+    }else if (mCurrentState == GameState.RESET) {
+      if (millis() - lastMillis > RESET_TIME) {
+        mCurrentState = GameState.INIT;
+        lastMillis = millis();
+      }
     }
   }
 
   void reset() {
-    mCurrentState = GameState.RESET;
-    mMotor.resetMotor();
-    mLight.resetLight();
-    lastMillis = millis();
+    //only reset if it's not on reset state
+    if ( mCurrentState != GameState.RESET) {
+      mCurrentState = GameState.RESET;
+      mMotor.resetMotor();
+      mLight.resetLight();
+      lastMillis = millis();
+    }
   }
 }

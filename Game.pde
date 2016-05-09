@@ -1,16 +1,16 @@
 //global constats for times
 private static final long RESET_TIME = 10000; //Reset time 10s
-private static final long BLOCKTIME = 6000; 
-
+private static final long PAUSE_TIME = 6000; 
 
 private enum GameState {
   INIT, 
     WAIT, 
     START, 
     SHUFFLE, 
-    TEST, 
+    ACTION, 
     STOP, 
     RESET,
+    PAUSE
 };
 
 class Game {
@@ -131,12 +131,12 @@ class Game {
       textFont(font);
       text(angle+"\nSHUFFLE\n"+str(millis() - lastMillis), width/2, height/2);
       popStyle();
-    } else if (mCurrentState == GameState.TEST) {
+    } else if (mCurrentState == GameState.ACTION) {
       pushStyle();
       textSize(50);
       textAlign(CENTER, CENTER);
       textFont(font);
-      text(angle+"\n"+shuffleAngle+"\nTEST\n"+str(millis() - lastMillis), width/2, height/2);
+      text(angle+"\n"+shuffleAngle+"\nACTION\n"+str(millis() - lastMillis), width/2, height/2);
       popStyle();
     } else if (mCurrentState == GameState.RESET) {
       pushStyle();
@@ -153,7 +153,7 @@ class Game {
       angle = _angle;
     }
     if (mCurrentState == GameState.INIT) { //wait block time, init
-      if (millis() - lastMillis > BLOCKTIME) {
+      if (millis() - lastMillis > PAUSE_TIME) {
         mCurrentState = GameState.WAIT;
         lastMillis = 0;
       }
@@ -181,10 +181,10 @@ class Game {
         lastMillis = millis();
         countShuffle++;
         if (countShuffle > 30 && abs(shuffleAngle-angle) > 0.006) {
-          mCurrentState = GameState.TEST;
+          mCurrentState = GameState.ACTION;
         }
       }
-    } else if (mCurrentState == GameState.TEST) {
+    } else if (mCurrentState == GameState.ACTION) {
       if (_angle !=- 1) {
         mMotor.setAngle(_angle);
         if(abs(shuffleAngle-_angle) < 0.006){
@@ -197,6 +197,13 @@ class Game {
       if (millis() - lastMillis > RESET_TIME) {
         mCurrentState = GameState.INIT;
         lastMillis = millis();
+        countShuffle = 0;
+      }
+    }else if (mCurrentState == GameState.PAUSE) {
+      if (millis() - lastMillis > PAUSE_TIME) {
+        mCurrentState = GameState.INIT;
+        lastMillis = millis();
+        countShuffle = 0;
       }
     }
   }

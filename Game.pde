@@ -1,5 +1,5 @@
 //global constats for times
-private static final RESET_TIME = 10000; //Reset time 10s
+private static final long RESET_TIME = 10000; //Reset time 10s
 private static final long BLOCKTIME = 6000; 
 
 

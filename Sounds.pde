@@ -12,7 +12,24 @@ class Sounds {
     }
   }
 
-  void triggerAudio(int id) {
-      audios.get(id).loop(0); //make it play and stop once
+  void playAudio(GameState state) {
+    audios.get(getId(state)).loop(0); //make it play and stop once
+  }
+  boolean isPlaying(GameState state) {
+    return audios.get(getId(state)).isPlaying();
+  }
+  private int getId(GameState state) {
+    int id;
+    switch(state) {
+    case WAITHAND:
+      id = 0;
+      break;
+    case START:
+      id = 0;
+      break;
+    default:
+      id = -1;
+    }
+    return id;
   }
 }

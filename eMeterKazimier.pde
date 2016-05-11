@@ -27,7 +27,8 @@ void setup() {
 
   font = createFont(PFont.list()[81], 100);
   try {
-    sPort = new Serial(this, "/dev/cu.LightBlue-Bean", 57600);
+    sPort = new Serial(this, "/dev/cu.Bluetooth-Incoming-Port", 57600);
+    //sPort = new Serial(this, "/dev/cu.LightBlue-Bean", 57600);
     sPort.bufferUntil('\n');
   }
   catch (Exception e) {

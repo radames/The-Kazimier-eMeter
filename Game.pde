@@ -6,7 +6,7 @@ private static final long SHUFFLE_TIME = 200; //200ms times SHUFFLE_COUNT
 private static final int SHUFFLE_COUNT = 10; // number of different shuffles
 private static final long MAX_ACTION_TIME = 5000; //15s max time to play
 private static final int MAX_ATTEMPS = 3; //max attemps
-private static final long GAMEOVERTIME = 5000;
+private static final long GAMEOVERTIME = 10000;
 
 private enum GameState {
   INIT, 
@@ -69,8 +69,9 @@ class Game {
   void draw() {
 
     pushMatrix();
+      translate(width/2, height/2);
+
     pushStyle();
-    translate(width/2, height/2);
     strokeWeight(5);
     stroke(255, 100, 0);
     fill(50, 50, 50, 100);
@@ -80,12 +81,10 @@ class Game {
     }
     endShape(CLOSE);
     popStyle();
-    popMatrix();
-
+    
     if (angle!=-1) {
       pushStyle();
       pushMatrix();
-      translate(width/2, height/2);
       rotate(map(angle, 1, 0, PI, -PI));
       pushMatrix();
       stroke(0, 0, 255);
@@ -99,7 +98,6 @@ class Game {
     if (shuffleAngle!=-1) {
       pushStyle();
       pushMatrix();
-      translate(width/2, height/2);
       rotate(map(shuffleAngle, 1, 0, PI, -PI));
       pushMatrix();
       stroke(255, 0, 0);
@@ -112,9 +110,8 @@ class Game {
 
     for (int i=0; i< mLight.segments.length; i++) {
       if (mLight.segments[i] == 1) {
-        pushMatrix();
         pushStyle();
-        translate(width/2, height/2);
+        pushMatrix();
         translate(300*cos(PI+i*PI/4), 300*sin(PI+i*PI/4));
         rectMode(CENTER);
         pushMatrix();
@@ -123,85 +120,32 @@ class Game {
         fill(255, 0, 0);
         rect(-25, -300*sqrt(2-2*cos(PI/4))/2, 50, 300*sqrt(2-2*cos(PI/4)));
         popMatrix();
-        popStyle();
         popMatrix();
+        popStyle();
       }
     }
-
-
-
-
     if (mCurrentState == GameState.INIT) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text("INIT\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text("INIT\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.WAITHAND) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text("WAIT HAND", width/2, height/2);
-      popStyle();
+      text("WAIT HAND", 0, 0);
     } else if (mCurrentState == GameState.START) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text(angle+"\nSTART\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text(angle+"\nSTART\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.SHUFFLE) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text(angle+"\nSHUFFLE\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text(angle+"\nSHUFFLE\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.ACTION) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text(angle+"\n"+shuffleAngle+"\nACTION\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text(angle+"\n"+shuffleAngle+"\nACTION\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.RESET) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text("RESETING\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text("RESETING\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.PAUSE) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text("PAUSE\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text("PAUSE\n"+str(millis() - lastMillis), 0,0);
     } else if (mCurrentState == GameState.SUCCESS) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text(maxAttempts + "\nSUCCESS\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text(maxAttempts + "\nSUCCESS\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.TIMESOVER) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text(maxAttempts + "\nTIMESOVER\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text(maxAttempts + "\nTIMESOVER\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.GAMEOVER) {
-      pushStyle();
-      textSize(50);
-      textAlign(CENTER, CENTER);
-      textFont(font);
-      text("GAMEOVER\n"+str(millis() - lastMillis), width/2, height/2);
-      popStyle();
+      text("GAMEOVER\n"+str(millis() - lastMillis), 0, 0);
     }
+    popMatrix();
   }
 
   void update(float _angle) {
@@ -321,13 +265,13 @@ class Game {
       }
     } else if (mCurrentState == GameState.PAUSE) {
       //general pause, it needs to pass the next state to 
-      if (millis() - lastMillis > PAUSE_TIME) {
+      if (millis() - lastMillis > PAUSE_TIME && !mSound.isPlaying(nextState)) {
         mCurrentState = nextState;
         lastMillis = millis();
       }
     } else if (mCurrentState == GameState.GAMEOVER) {
       //GAME_OVER
-      if (millis() - lastMillis > GAMEOVERTIME) {
+      if (millis() - lastMillis > GAMEOVERTIME && !mSound.isPlaying(GameState.GAMEOVER)) {
         mCurrentState = GameState.INIT;
         lastMillis = millis();
         countShuffle = 0;

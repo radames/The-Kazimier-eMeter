@@ -24,7 +24,12 @@ void setup() {
   g = new Graph(0, 0);
   game = new Game();
 
-  font = createFont(PFont.list()[81], 100);
+  font = createFont(PFont.list()[81], 20);
+
+  textSize(50);
+  textAlign(CENTER, CENTER);
+  textFont(font);
+
   try {
     sPort = new Serial(this, "/dev/cu.Bluetooth-Incoming-Port", 57600);
     //sPort = new Serial(this, "/dev/cu.LightBlue-Bean", 57600);

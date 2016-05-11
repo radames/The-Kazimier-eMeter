@@ -56,7 +56,7 @@ class Game {
 
     mMotor = new Motor(oscP5);
     mLight = new Lights(oscP5);
-    mSound = new Sounds(oscP5);
+    mSound = new Sounds();
     
     mCurrentState = GameState.INIT;
     lastMillis = 0;

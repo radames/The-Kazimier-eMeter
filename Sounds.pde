@@ -1,19 +1,18 @@
 //control the lights effects through OSC Messages
 class Sounds {
+  final static int NUM_SOUNDS = 7;
+  private ArrayList<AudioPlayer> audios;
 
-  NetAddress mRemoteLoc;
-  OscP5 osc;
-  
   //keep state of the segments
-  Sounds(OscP5 _osc) {
-    osc = _osc;
-    mRemoteLoc = new NetAddress("localhost", 10000);
-
+  Sounds() {
+    audios = new ArrayList<AudioPlayer>();
+    for (int i=0; i < NUM_SOUNDS; i++) {
+      AudioPlayer a = minim.loadFile(dataPath(i+".mp3"), 2048);
+      audios.add(a);
+    }
   }
 
   void triggerAudio(int id) {
-    OscMessage myMessage = new OscMessage("/sound/");
-    myMessage.add(int(id)); /* add an int to the osc message */
-    osc.send(myMessage, mRemoteLoc);
+      audios.get(id).loop(0); //make it play and stop once
   }
 }

@@ -2,14 +2,15 @@ import java.util.Date;
 import de.voidplus.leapmotion.*;
 import oscP5.*;
 import netP5.*;
-
 import processing.serial.*;
+import ddf.minim.*;
 
 LeapMotion leap;
 Graph g;
 Game game;
 
 Serial sPort;
+Minim minim;
 
 PFont font;
 
@@ -19,7 +20,7 @@ void setup() {
 
   background(255);
   // ...
-
+  minim = new Minim(this);
   leap = new LeapMotion(this);
   g = new Graph(0, 0);
   game = new Game();

@@ -16,7 +16,6 @@ PFont font;
 
 void setup() {
   size(800, 800);
-  pixelDensity(2); //for MacRetina
 
   background(255);
   // ...

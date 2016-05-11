@@ -1,10 +1,10 @@
 //global constats for times
 private static final long RESET_TIME = 10000; //Reset time 10s
 private static final long PAUSE_TIME = 2000; 
-private static final long START_TIME = 10000; //initial start time with inial instructions 
+private static final long START_TIME = 3000; //initial start time with inial instructions 
 private static final long SHUFFLE_TIME = 200; //200ms times SHUFFLE_COUNT
 private static final int SHUFFLE_COUNT = 10; // number of different shuffles
-private static final long MAX_ACTION_TIME = 15000; //15s max time to play
+private static final long MAX_ACTION_TIME = 5000; //15s max time to play
 private static final int MAX_ATTEMPS = 3; //max attemps
 private static final long GAMEOVERTIME = 5000;
 
@@ -214,7 +214,6 @@ class Game {
         mCurrentState = GameState.WAITHAND;
         lastMillis = 0;
         mSound.playAudio(GameState.WAITHAND);
-
       }
     } else if (mCurrentState == GameState.WAITHAND) {
 
@@ -243,7 +242,7 @@ class Game {
 
       //start shuffling, 
       //also needs to be different from the last angle position
-      if (millis() - lastMillis > SHUFFLE_TIME && !mSound.isPlaying(GameState.SHUFFLE)) {
+      if (millis() - lastMillis > SHUFFLE_TIME) {
         shuffleAngle =  map(floor(random(1, 9)), 1, 9, 0, 1) + 0.0625;
 
         mLight.setAngle(shuffleAngle, 1); //send only segments lights
@@ -266,40 +265,52 @@ class Game {
         if (millis() - lastMillis < MAX_ACTION_TIME) {//
           //here is good timing
           if (abs(shuffleAngle-_angle) < 0.006) { // WIN!!
-            mCurrentState = GameState.SUCCESS;
+            mCurrentState = GameState.PAUSE;
+            nextState = GameState.SUCCESS;
+            mSound.playAudio(GameState.SUCCESS);
+            println("SUCESSS AUDIO ------ ");
             lastMillis = millis();
             countShuffle = 0;
             maxAttempts++;
-            mSound.playAudio(GameState.SUCCESS);
           }
         } else {
           //times is over
-          mCurrentState = GameState.TIMESOVER;
+          mCurrentState = GameState.PAUSE;
+          nextState = GameState.TIMESOVER;
+          mSound.playAudio(GameState.TIMESOVER);
           lastMillis = millis();
           countShuffle = 0;
           maxAttempts++;
-          mSound.playAudio(GameState.TIMESOVER);
         }
+      }
 
-        if (maxAttempts >= MAX_ATTEMPS) {
-          maxAttempts = 0; 
-          mCurrentState = GameState.PAUSE;
-          nextState = GameState.GAMEOVER;
-          lastMillis = millis();
-          mSound.playAudio(GameState.GAMEOVER);
-        }
+      if (millis() - lastMillis > MAX_ACTION_TIME) {
+        mCurrentState = GameState.PAUSE;
+        nextState = GameState.TIMESOVER;
+        mSound.playAudio(GameState.TIMESOVER);
+        lastMillis = millis();
+        countShuffle = 0;
+        maxAttempts++;
+      }
+      if (maxAttempts >= MAX_ATTEMPS) {
+        mCurrentState = GameState.PAUSE;
+        nextState = GameState.GAMEOVER;
+        mSound.playAudio(GameState.GAMEOVER);
+        lastMillis = millis();
+        maxAttempts = 0;
+        countShuffle = 0;
       }
     } else if (mCurrentState == GameState.SUCCESS) {
       if (millis() - lastMillis > 2000) {
         mCurrentState = GameState.SHUFFLE;
-        lastMillis = millis();
         mSound.playAudio(GameState.SHUFFLE);
+        lastMillis = millis();
       }
     } else if (mCurrentState == GameState.TIMESOVER) {
       if (millis() - lastMillis > 2000) {
         mCurrentState = GameState.SHUFFLE;
-        lastMillis = millis();
         mSound.playAudio(GameState.SHUFFLE);
+        lastMillis = millis();
       }
     } else if (mCurrentState == GameState.RESET) {
       if (millis() - lastMillis > RESET_TIME) {

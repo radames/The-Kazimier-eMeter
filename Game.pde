@@ -69,7 +69,7 @@ class Game {
   void draw() {
 
     pushMatrix();
-      translate(width/2, height/2);
+    translate(width/2, height/2);
 
     pushStyle();
     strokeWeight(5);
@@ -81,7 +81,7 @@ class Game {
     }
     endShape(CLOSE);
     popStyle();
-    
+
     if (angle!=-1) {
       pushStyle();
       pushMatrix();
@@ -137,7 +137,7 @@ class Game {
     } else if (mCurrentState == GameState.RESET) {
       text("RESETING\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.PAUSE) {
-      text("PAUSE\n"+str(millis() - lastMillis), 0,0);
+      text("PAUSE\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.SUCCESS) {
       text(maxAttempts + "\nSUCCESS\n"+str(millis() - lastMillis), 0, 0);
     } else if (mCurrentState == GameState.TIMESOVER) {
@@ -227,7 +227,8 @@ class Game {
           maxAttempts++;
         }
       }
-
+      //send OSC message with time counter
+      mLight.sendTime(min((float)(millis() - lastMillis)/MAX_ACTION_TIME,1));
       if (millis() - lastMillis > MAX_ACTION_TIME) {
         mCurrentState = GameState.PAUSE;
         nextState = GameState.TIMESOVER;

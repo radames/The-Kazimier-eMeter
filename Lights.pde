@@ -16,7 +16,11 @@ class Lights {
     resetLight();
   }
 
-
+  void sendTime(float time) {
+    OscMessage myMessage = new OscMessage("/lightTime/");
+    myMessage.add(time);
+    osc.send(myMessage, mRemoteLoc);
+  }
 
   void setAngle(float _angle, int type) {
     lastAngle = angle; //keep track of the last angle

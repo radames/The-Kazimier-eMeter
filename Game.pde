@@ -9,8 +9,8 @@ private static final int MAX_ATTEMPS = 3; //max attemps
 private static final long GAMEOVERTIME = 10000;
 
 //center point to calculate the handle angle relation
-private float CENTERX = width/2; 
-private float CENTERY = height/2;
+private float CENTERX = 400; 
+private float CENTERY = 400;
 private float SAFERADIUS = 100;  ///invisible circle in the middle
 
 private enum GameState {

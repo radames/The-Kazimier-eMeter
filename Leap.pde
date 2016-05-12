@@ -28,8 +28,6 @@ float processHand() {
       float   sphere_radius    = hand.getSphereRadius();
 
 
-      float centerY = height/2;
-      float centerX = width/2;
 
       //pushMatrix();
       //translate(centerX, centerY);
@@ -38,9 +36,15 @@ float processHand() {
 
       //line(hand_position.x, hand_position.y, centerX, centerY);
 
-      float x = hand_position.x - centerX;
-      float y = hand_position.y - centerY;
-
+      float x = hand_position.x - CENTERX;
+      float y = hand_position.y - CENTERY;
+      //test if the X and Y is outside a circle of raius R
+      //protection agains big angular velocity
+      //println(x);
+      if(x*x + y*y < SAFERADIUS*SAFERADIUS){
+        return -1;
+      }
+      
       float r = sqrt(x*x + y*y);
       float a = atan2(y, x);
       float aN = map(a, PI, -PI, 1, 0);

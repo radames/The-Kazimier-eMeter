@@ -22,7 +22,7 @@ class Motor {
 
     //only send OSC if the angle changes by a small amount
     //avoid constant OSC messages
-    if (abs(lastAngle - angle) > 0.003) {
+    if (abs(lastAngle - angle) > 0. && abs(lastAngle - angle) < 0.05) {
       OscMessage myMessage = new OscMessage("/twiz");
 
       //OscMessage myMessage = new OscMessage("/1/fader2");

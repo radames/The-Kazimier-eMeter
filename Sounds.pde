@@ -10,9 +10,19 @@ class Sounds {
       audios[i] = minim.loadFile(dataPath(i+".wav"), 2048);
     }
   }
-
+  void playAudio(GameState state, boolean loop ) {
+    if (loop == false) {
+      audios[getId(state)].loop(0); //make it play and stop once
+    } else {
+      audios[getId(state)].loop(); //make it play and stop once
+    }
+  }
   void playAudio(GameState state) {
-    audios[getId(state)].loop(0); //make it play and stop once
+    playAudio(state, false);
+  }
+  void stopAudio(GameState state) {
+     audios[getId(state)].pause();
+     audios[getId(state)].rewind();
   }
   boolean isPlaying(GameState state) {
     return audios[getId(state)].isPlaying();

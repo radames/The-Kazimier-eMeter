@@ -1,6 +1,6 @@
 //global constats for times
 private static final long RESET_TIME = 10000; //Reset time 10s
-private static final long PAUSE_TIME = 2000; 
+private static final long PAUSE_TIME = 3000; 
 private static final long START_TIME = 3000; //initial start time with inial instructions 
 private static final long SHUFFLE_TIME = 200; //200ms times SHUFFLE_COUNT
 private static final int SHUFFLE_COUNT = 10; // number of different shuffles
@@ -157,13 +157,15 @@ class Game {
       if (millis() - lastMillis > PAUSE_TIME) {
         mCurrentState = GameState.WAITHAND;
         lastMillis = 0;
-        mSound.playAudio(GameState.WAITHAND);
+        mSound.playAudio(GameState.WAITHAND, true);
       }
     } else if (mCurrentState == GameState.WAITHAND) {
 
       if (_angle !=- 1) {
         mCurrentState = GameState.START;
+        mSound.stopAudio(GameState.WAITHAND); //stop audio in loop
         mSound.playAudio(GameState.START); // Start sound.
+        mLight.sendMessage("start");
         lastMillis = millis();
       }
     } else if (mCurrentState == GameState.START) {
@@ -181,6 +183,7 @@ class Game {
         nextState = GameState.SHUFFLE;
         lastMillis = millis();
         mSound.playAudio(GameState.SHUFFLE); // SHUFFLE AUDIO
+        mLight.sendMessage("shuffle");
       }
     } else if (mCurrentState == GameState.SHUFFLE) {
 
@@ -199,6 +202,7 @@ class Game {
           lastMillis = millis();
 
           mSound.playAudio(GameState.ACTION); //ACTION audio
+          mLight.sendMessage("action");
         }
       }
     } else if (mCurrentState == GameState.ACTION) {
@@ -212,7 +216,7 @@ class Game {
             mCurrentState = GameState.PAUSE;
             nextState = GameState.SUCCESS;
             mSound.playAudio(GameState.SUCCESS);
-            println("SUCESSS AUDIO ------ ");
+            mLight.sendMessage("success");
             lastMillis = millis();
             countShuffle = 0;
             maxAttempts++;
@@ -222,17 +226,19 @@ class Game {
           mCurrentState = GameState.PAUSE;
           nextState = GameState.TIMESOVER;
           mSound.playAudio(GameState.TIMESOVER);
+          mLight.sendMessage("timesover");
           lastMillis = millis();
           countShuffle = 0;
           maxAttempts++;
         }
       }
       //send OSC message with time counter
-      mLight.sendTime(min((float)(millis() - lastMillis)/MAX_ACTION_TIME,1));
+      mLight.sendTime(min((float)(millis() - lastMillis)/MAX_ACTION_TIME, 1));
       if (millis() - lastMillis > MAX_ACTION_TIME) {
         mCurrentState = GameState.PAUSE;
         nextState = GameState.TIMESOVER;
         mSound.playAudio(GameState.TIMESOVER);
+        mLight.sendMessage("timesover");
         lastMillis = millis();
         countShuffle = 0;
         maxAttempts++;
@@ -241,6 +247,7 @@ class Game {
         mCurrentState = GameState.PAUSE;
         nextState = GameState.GAMEOVER;
         mSound.playAudio(GameState.GAMEOVER);
+        mLight.sendMessage("gameover");
         lastMillis = millis();
         maxAttempts = 0;
         countShuffle = 0;

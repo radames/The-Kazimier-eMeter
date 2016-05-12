@@ -16,6 +16,11 @@ class Lights {
     resetLight();
   }
 
+  void sendMessage(String msg) {
+    OscMessage myMessage = new OscMessage("/lightState/" + msg);
+    osc.send(myMessage, mRemoteLoc);
+  }
+
   void sendTime(float time) {
     OscMessage myMessage = new OscMessage("/lightTime/");
     myMessage.add(time);
